@@ -84,7 +84,7 @@ class SushiGoEnv(gym.Env):
         - Turno actual
         - Tamaño de mano actual
         """
-        obs = []
+        obs = [] 
         
         # 1. One-hot encoding de la mano actual
         current_hand = self.hands[self.agent_idx]
@@ -199,7 +199,7 @@ class SushiGoEnv(gym.Env):
         if terminated:
             # Recompensa final: puntaje total
             final_score = calculate_score(self.played_cards)
-            reward += final_score
+            reward = final_score
         
         obs = self._get_observation()
         info = {
