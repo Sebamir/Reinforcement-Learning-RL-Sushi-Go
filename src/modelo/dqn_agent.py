@@ -41,34 +41,38 @@ class DQNAgent:
         return torch.argmax(q_values[0]).item()
 
     def replay(self):
-        """Entrena la red con una muestra de la memoria."""
         if len(self.memory) < self.batch_size:
             return
 
+        # 1. Tomamos una muestra aleatoria
         minibatch = random.sample(self.memory, self.batch_size)
         
-        for state, action, reward, next_state, done in minibatch:
-            state = torch.FloatTensor(state).unsqueeze(0).to(self.device)
-            next_state = torch.FloatTensor(next_state).unsqueeze(0).to(self.device)
-            
-            # Calculamos el Q-target (lo que debería haber predicho)
-            target = reward
-            if not done:
-                # Ecuación de Bellman: recompensa actual + valor futuro descontado
-                target = reward + self.gamma * torch.max(self.model(next_state)[0]).item()
-            
-            # Obtenemos la predicción actual
-            target_f = self.model(state)
-            
-            # Actualizamos solo el valor de la acción tomada
-            target_f[0][action] = target
-            
-            # Paso de entrenamiento
-            self.optimizer.zero_grad()
-            loss = self.criterion(self.model(state), target_f)
-            loss.backward()
-            self.optimizer.step()
+        # 2. Convertimos todo a Tensors de golpe (más rápido)
+        states = torch.FloatTensor(np.array([x[0] for x in minibatch])).to(self.device)
+        actions = torch.LongTensor([x[1] for x in minibatch]).to(self.device)
+        rewards = torch.FloatTensor([x[2] for x in minibatch]).to(self.device)
+        next_states = torch.FloatTensor(np.array([x[3] for x in minibatch])).to(self.device)
+        dones = torch.FloatTensor([x[4] for x in minibatch]).to(self.device)
 
-        # Reducimos la exploración
+        # 3. Predicción actual y futura
+        curr_q_values = self.model(states)
+        next_q_values = self.model(next_states)
+
+        # 4. Calculamos el Target usando Bellman vectorizado
+        max_next_q = torch.max(next_q_values, dim=1)[0]
+        targets = rewards + (self.gamma * max_next_q * (1 - dones))
+
+        # 5. Actualizamos solo los Q-values de las acciones que tomamos
+        target_f = curr_q_values.clone()
+        for i in range(self.batch_size):
+            target_f[i][actions[i]] = targets[i]
+
+        # 6. Entrenamiento de la red
+        self.optimizer.zero_grad()
+        loss = self.criterion(curr_q_values, target_f)
+        loss.backward()
+        self.optimizer.step()
+
+        # Reducir exploración
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
