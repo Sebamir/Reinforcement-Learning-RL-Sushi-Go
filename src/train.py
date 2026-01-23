@@ -1,4 +1,5 @@
 import numpy as np
+import os
 import torch
 from src.env.sushi_env import SushiGoEnv
 from src.modelo.dqn_agent import DQNAgent
@@ -55,9 +56,24 @@ def train():
 if __name__ == "__main__":
     history = train()
     
-    # Graficar resultados
+    # 1. Crear la carpeta 'Results' si no existe
+    results_dir = "Results"
+    if not os.path.exists(results_dir):
+        os.makedirs(results_dir)
+        print(f"Carpeta '{results_dir}' creada.")
+
+    # 2. Graficar resultados
+    plt.figure(figsize=(10, 6)) # Opcional: define un tamaño más legible
     plt.plot(history)
     plt.title("Evolución del Aprendizaje (Sushi Go)")
     plt.xlabel("Episodio")
     plt.ylabel("Puntaje Total")
+    
+    # 3. Guardar el gráfico antes de mostrarlo
+    # Usamos una ruta relativa que funcionará en cualquier sistema
+    save_path = os.path.join(results_dir, "training_curve.png")
+    plt.savefig(save_path)
+    print(f"Gráfico guardado en: {save_path}")
+    
+    # 4. Mostrarlo (opcional)
     plt.show()
