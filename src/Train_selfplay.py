@@ -51,13 +51,8 @@ class SelfPlayExperiment:
         )
         
         # Inicializar modelo
-        trainer.init_model(
-            policy='MlpPolicy',
-            learning_rate=3e-4,
-            n_steps=2048,
-            batch_size=64,
-            verbose=1
-        )
+        trainer.init_model()
+        
         
         # Entrenamiento con evaluaciones periódicas
         n_evals = total_timesteps // eval_freq

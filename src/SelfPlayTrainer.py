@@ -1,4 +1,6 @@
 import numpy as np
+import torch
+import io
 from stable_baselines3 import PPO
 from stable_baselines3.common.vec_env import DummyVecEnv
 from collections import deque
@@ -33,6 +35,7 @@ class SelfPlayTrainer:
     def init_model(self, policy='MlpPolicy', **kwargs):
         """Inicializa el modelo principal."""
         env = DummyVecEnv([self.create_env])
+       # auto_device = 'cuda' if torch.cuda.is_available() else 'cpu' 
         
         default_params = {
             'learning_rate': 3e-4,
@@ -42,13 +45,22 @@ class SelfPlayTrainer:
             'gamma': 0.99,
             'gae_lambda': 0.95,
             'clip_range': 0.2,
-            'verbose': 1
+            'verbose': 0,
+            'device': 'cpu'
         }
         default_params.update(kwargs)
-        
+
         self.model = PPO(policy, env, **default_params)
         return self.model
     
+    def _get_model_copy(self):
+        """Crea una copia limpia de los pesos del modelo actual."""
+        buffer = io.BytesIO()
+        self.model.save(buffer)
+        buffer.seek(0)
+        # Cargamos el modelo en una instancia nueva (sin optimizador para ahorrar memoria)
+        return PPO.load(buffer)
+
     def train_sequential(self, total_timesteps, save_interval=50000):
         """
         Entrenamiento secuencial: todos los jugadores usan el mismo modelo.
@@ -74,17 +86,19 @@ class SelfPlayTrainer:
                 self.n_calls += 1
                 if self.n_calls % self.save_interval == 0:
                     # Guardar versión actual
-                    model_copy = copy.deepcopy(self.trainer.model)
+                    model_copy = self.trainer._get_model_copy()
                     self.trainer.past_models.append(model_copy)
                     print(f"📸 Snapshot guardado en step {self.n_calls}")
                 return True
+            
         
         callback = SelfPlayCallback(self, save_interval)
         self.model.learn(total_timesteps=total_timesteps, callback=callback)
         
         print("✅ Entrenamiento completado")
         return self.model
-    
+
+
     def play_full_game_sequential(self, render=False):
         """
         Juega un juego completo con el modelo actual.
@@ -137,7 +151,7 @@ class SelfPlayTrainer:
             
             # Agregar versión actual al pool
             if len(self.past_models) < opponent_pool_size:
-                model_copy = copy.deepcopy(self.model)
+                model_copy = self._get_model_copy()
                 self.past_models.append(model_copy)
                 print(f"   Modelo agregado al pool ({len(self.past_models)}/{opponent_pool_size})")
         
@@ -170,8 +184,9 @@ class SelfPlayTrainer:
                 obs, reward, done, truncated, info = env.step(action)
             
             # Evaluar resultado
-            scores = info['final_scores']
-            if info['winner'] == 0:
+            scores = info.get('final_scores', [0, 0]) # Devuelve [0,0] si no existe la clave
+            winner = info.get('winner', -1)
+            if winner == 0:
                 wins += 1
             
             total_score_diff += scores[0] - scores[1]
