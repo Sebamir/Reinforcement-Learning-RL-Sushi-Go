@@ -12,7 +12,7 @@ class SushiGoSelfPlayEnv(gym.Env):
     - Todos los jugadores son agentes entrenables
     - Observaciones relativas (cada agente ve desde su perspectiva)
     - Recompensas competitivas (diferencia de puntaje)
-    - Soporte para entrenamiento simultáneo o alternado
+    - Info explícita de wasabi disponible
     """
     
     def __init__(self, num_players=2, competitive_reward=True):
@@ -27,16 +27,17 @@ class SushiGoSelfPlayEnv(gym.Env):
         # Espacio de acciones
         self.action_space = spaces.Discrete(self.initial_hand_size)
         
-        # Espacio de observación (igual para todos los agentes)
+        # Espacio de observación
         num_card_types = len(CARD_MAP)
         obs_size = (
             self.initial_hand_size * num_card_types +  # Mano actual
             num_card_types * self.num_players +        # Cartas jugadas por cada jugador
-            3                                           # Turno, tamaño mano, jugador actual
+            3 +                                         # Turno, tamaño mano, jugador actual
+            self.num_players                           # Wasabi disponible por jugador
         )
         
         self.observation_space = spaces.Box(
-            low=0, 
+            low=-5,  # Wasabi puede ser negativo si hay más nigiri que wasabi
             high=max(self.initial_hand_size, 20), 
             shape=(obs_size,), 
             dtype=np.float32
@@ -45,9 +46,9 @@ class SushiGoSelfPlayEnv(gym.Env):
         # Estado interno
         self.deck = []
         self.hands = []
-        self.played_cards = [[] for _ in range(num_players)]  # Cartas por jugador
+        self.played_cards = [[] for _ in range(num_players)]
         self.current_turn = 0
-        self.current_player = 0  # Jugador actual en turno
+        self.current_player = 0
         
     def _create_deck(self):
         """Crea y mezcla un mazo completo."""
@@ -71,10 +72,27 @@ class SushiGoSelfPlayEnv(gym.Env):
         
         return hands
     
+    def _calculate_available_wasabi(self, played_card_ids):
+        """
+        Calcula wasabi disponibles para un jugador.
+        
+        wasabi_disponible = wasabi_jugados - nigiri_jugados
+        
+        Puede ser:
+        - Positivo: hay wasabi esperando nigiri
+        - Cero: todos los wasabi están usados
+        - Negativo: hay más nigiri que wasabi (algunos sin triplicar)
+        """
+        wasabi_count = sum(1 for cid in played_card_ids if cid == CARD_MAP['wasabi'])
+        nigiri_count = sum(
+            1 for cid in played_card_ids 
+            if cid in [CARD_MAP['nigiri_salmon'], CARD_MAP['nigiri_squid'], CARD_MAP['nigiri_egg']]
+        )
+        return wasabi_count - nigiri_count
+    
     def _get_observation(self, player_idx):
         """
         Genera observación para un jugador específico.
-        Cada agente ve el juego desde su perspectiva.
         """
         obs = []
         
@@ -82,10 +100,10 @@ class SushiGoSelfPlayEnv(gym.Env):
         current_hand = self.hands[player_idx]
         num_card_types = len(CARD_MAP)
         
-        for card_id in range(self.initial_hand_size):
+        for card_idx in range(self.initial_hand_size):
             one_hot = np.zeros(num_card_types, dtype=np.float32)
-            if card_id < len(current_hand):
-                one_hot[current_hand[card_id]] = 1
+            if card_idx < len(current_hand):
+                one_hot[current_hand[card_idx]] = 1
             obs.extend(one_hot)
         
         # 2. Conteo de cartas jugadas por cada jugador
@@ -98,7 +116,12 @@ class SushiGoSelfPlayEnv(gym.Env):
         # 3. Info contextual
         obs.append(self.current_turn)
         obs.append(len(current_hand))
-        obs.append(player_idx)  # Identidad del jugador
+        obs.append(player_idx)
+        
+        # 4. Wasabi disponible por jugador
+        for p_idx in range(self.num_players):
+            wasabi_available = self._calculate_available_wasabi(self.played_cards[p_idx])
+            obs.append(wasabi_available)
         
         return np.array(obs, dtype=np.float32)
     
@@ -107,25 +130,54 @@ class SushiGoSelfPlayEnv(gym.Env):
         self.hands = [self.hands[-1]] + self.hands[:-1]
     
     def _calculate_immediate_reward(self, player_idx, card_played):
-        """Calcula recompensa inmediata por completar sets."""
+        """
+        Calcula recompensa INCREMENTAL por jugar esta carta.
+        
+        IMPORTANTE: Solo recompensa por sets COMPLETADOS, no por puntaje total.
+        El puntaje total se calcula al final con calculate_score().
+        """
         reward = 0
-        c = Counter([ID_TO_CARD[cid] for cid in self.played_cards[player_idx]])
+        cards = [ID_TO_CARD[cid] for cid in self.played_cards[player_idx]]
+        card_name = ID_TO_CARD[card_played]
+        c = Counter(cards)
         
-        # Tempura: +5 al completar pareja
-        if c['tempura'] % 2 == 0 and c['tempura'] > 0:
-            if ID_TO_CARD[card_played] == 'tempura':
-                reward += 5
+        # Tempura: +5 al completar pareja (2, 4, 6, ...)
+        if card_name == 'tempura' and c['tempura'] % 2 == 0:
+            reward += 5
         
-        # Sashimi: +10 al completar trío
-        if c['sashimi'] % 3 == 0 and c['sashimi'] > 0:
-            if ID_TO_CARD[card_played] == 'sashimi':
-                reward += 10
+        # Sashimi: +10 al completar trío (3, 6, 9, ...)
+        if card_name == 'sashimi' and c['sashimi'] % 3 == 0:
+            reward += 10
         
-        # Dumpling: recompensa incremental
-        if ID_TO_CARD[card_played] == 'dumpling':
-            dumpling_rewards = [0, 1, 2, 3, 4, 5]
-            if c['dumpling'] <= 5:
-                reward += dumpling_rewards[c['dumpling'] - 1]
+        # Dumpling: recompensa incremental por cada uno
+        if card_name == 'dumpling':
+            # Puntos según cantidad: 1→1, 2→3, 3→6, 4→10, 5→15
+            dumpling_points = {1: 1, 2: 3, 3: 6, 4: 10, 5: 15}
+            current_points = dumpling_points.get(c['dumpling'], 15)
+            previous_points = dumpling_points.get(c['dumpling'] - 1, 0)
+            reward += current_points - previous_points
+        
+        # Nigiri: recompensa solo si hay wasabi disponible
+        if card_name.startswith('nigiri_'):
+            wasabi_available = self._calculate_available_wasabi(
+                self.played_cards[player_idx][:-1]  # Antes de jugar este nigiri
+            )
+            
+            if card_name == 'nigiri_salmon':
+                base_value = 3
+            elif card_name == 'nigiri_squid':
+                base_value = 2
+            elif card_name == 'nigiri_egg':
+                base_value = 1
+            
+            # Si había wasabi disponible, este nigiri se triplica
+            if wasabi_available > 0:
+                reward += base_value * 3
+            else:
+                reward += base_value
+        
+        # Wasabi: sin recompensa inmediata (es inversión para el futuro)
+        # Maki: sin recompensa inmediata (depende de oponentes al final)
         
         return reward
     
@@ -134,11 +186,23 @@ class SushiGoSelfPlayEnv(gym.Env):
         Calcula recompensas competitivas al final.
         Cada jugador recibe: su_puntaje - promedio_de_otros
         """
-        scores = [calculate_score(cards) for cards in self.played_cards]
+        scores, total_maki = zip(*[calculate_score(cards) for cards in self.played_cards])
+        final_scores = list(scores)
+        maki_counts = list(total_maki)
+        max_maki = max(maki_counts)
+        maki_winners = [i for i, m in enumerate(maki_counts) if m == max_maki]
+
+        if len(maki_winners) == 1:
+            final_scores[maki_winners[0]] += 6  # Premio completo
+        else:
+            split_prize = 6 / len(maki_winners)
+            for w in maki_winners:
+                final_scores[w] += split_prize
+
         rewards = []
         
-        for i, my_score in enumerate(scores):
-            other_scores = [s for j, s in enumerate(scores) if j != i]
+        for i, my_score in enumerate(final_scores):
+            other_scores = [s for j, s in enumerate(final_scores) if j != i]
             avg_opponent = np.mean(other_scores) if other_scores else 0
             reward = my_score - avg_opponent
             rewards.append(reward)
@@ -155,7 +219,6 @@ class SushiGoSelfPlayEnv(gym.Env):
         self.current_turn = 0
         self.current_player = 0
         
-        # Devuelve observación del primer jugador
         obs = self._get_observation(0)
         info = {
             'player': 0,
@@ -182,7 +245,7 @@ class SushiGoSelfPlayEnv(gym.Env):
         card_played = current_hand.pop(action)
         self.played_cards[player].append(card_played)
         
-        # Calcular recompensa inmediata
+        # Calcular recompensa inmediata (solo para sets completados)
         reward = self._calculate_immediate_reward(player, card_played)
         
         # Avanzar al siguiente jugador
@@ -233,8 +296,87 @@ class SushiGoSelfPlayEnv(gym.Env):
         print(f"\n=== Turno {self.current_turn}/{self.max_turns} | Jugador {self.current_player} ===")
         
         for i in range(self.num_players):
+            wasabi_avail = self._calculate_available_wasabi(self.played_cards[i])
             print(f"\nJugador {i}:")
             print(f"  Mano: {[ID_TO_CARD[c] for c in self.hands[i]]}")
             print(f"  Jugadas: {[ID_TO_CARD[c] for c in self.played_cards[i]]}")
+            print(f"  Wasabi disponible: {wasabi_avail}")
             if self.current_turn == self.max_turns:
                 print(f"  Puntaje: {calculate_score(self.played_cards[i])}")
+
+
+# ===== TEST DE VALIDACIÓN =====
+
+def test_environment():
+    """Prueba el entorno con casos específicos."""
+    print("="*60)
+    print("TEST DEL ENTORNO")
+    print("="*60)
+    
+    env = SushiGoSelfPlayEnv(num_players=2, competitive_reward=True)
+    
+    # Test 1: Verificar tamaño de observación
+    print("\n1. Verificando espacios...")
+    obs, info = env.reset()
+    print(f"   Observation shape: {obs.shape}")
+    print(f"   Expected: ({env.observation_space.shape[0]},)")
+    assert obs.shape == env.observation_space.shape, "❌ Tamaño de observación incorrecto"
+    print("   ✅ Espacios correctos")
+    
+    # Test 2: Verificar wasabi info
+    print("\n2. Verificando wasabi info...")
+    # Simular jugar un wasabi
+    env.played_cards[0] = [CARD_MAP['wasabi']]
+    obs = env._get_observation(0)
+    wasabi_info_start = (
+        env.initial_hand_size * len(CARD_MAP) +
+        len(CARD_MAP) * env.num_players +
+        3
+    )
+    wasabi_value = obs[wasabi_info_start]
+    print(f"   Wasabi disponible (debería ser 1): {wasabi_value}")
+    assert wasabi_value == 1, "❌ Wasabi info incorrecta"
+    print("   ✅ Wasabi info correcta")
+    
+    # Test 3: Verificar recompensa incremental
+    print("\n3. Verificando recompensas...")
+    env.reset()
+    
+    # Jugar 2 tempuras
+    env.played_cards[0] = [CARD_MAP['tempura']]
+    reward1 = env._calculate_immediate_reward(0, CARD_MAP['tempura'])
+    print(f"   Primera tempura: {reward1} pts (debería ser 0)")
+    
+    env.played_cards[0] = [CARD_MAP['tempura'], CARD_MAP['tempura']]
+    reward2 = env._calculate_immediate_reward(0, CARD_MAP['tempura'])
+    print(f"   Segunda tempura: {reward2} pts (debería ser 5)")
+    
+    assert reward1 == 0, "❌ Primera tempura debería dar 0"
+    assert reward2 == 5, "❌ Segunda tempura debería dar 5"
+    print("   ✅ Recompensas correctas")
+    
+    # Test 4: Verificar wasabi + nigiri
+    print("\n4. Verificando wasabi + nigiri...")
+    env.reset()
+    
+    # Jugar wasabi primero
+    env.played_cards[0] = [CARD_MAP['wasabi']]
+    reward_wasabi = env._calculate_immediate_reward(0, CARD_MAP['wasabi'])
+    print(f"   Wasabi solo: {reward_wasabi} pts (debería ser 0)")
+    
+    # Luego jugar salmon
+    env.played_cards[0] = [CARD_MAP['wasabi'], CARD_MAP['nigiri_salmon']]
+    reward_salmon = env._calculate_immediate_reward(0, CARD_MAP['nigiri_salmon'])
+    print(f"   Salmon con wasabi: {reward_salmon} pts (debería ser 9)")
+    
+    assert reward_wasabi == 0, "❌ Wasabi solo debería dar 0"
+    assert reward_salmon == 9, "❌ Salmon con wasabi debería dar 9"
+    print("   ✅ Wasabi + Nigiri correcto")
+    
+    print("\n" + "="*60)
+    print("✅ TODOS LOS TESTS PASARON")
+    print("="*60)
+
+
+if __name__ == "__main__":
+    test_environment()

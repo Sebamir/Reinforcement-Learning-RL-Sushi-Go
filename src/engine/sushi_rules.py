@@ -9,7 +9,11 @@ CARD_MAP = {
     'maki_1': 4,
     'maki_2': 5,
     'maki_3': 6,
-    'pudding': 7
+    'pudding': 7,
+    'nigiri_salmon':8,
+    'nigiri_squid':9,
+    'nigiri_egg':10,
+    'wasabi':11,
 }
 
 # Inverso para nosotros poder leer los resultados
@@ -23,7 +27,11 @@ DECK_COMPOSITION = {
     'maki_1': 6,
     'maki_2': 12,
     'maki_3': 8,
-    'pudding': 10
+    'pudding': 10,
+    'nigiri_salmon':10,
+    'nigiri_squid':5,   
+    'nigiri_egg':5,
+    'wasabi':6,
 }
 
 def calculate_score(played_cards_ids):
@@ -50,6 +58,30 @@ def calculate_score(played_cards_ids):
     # 4. Maki Rolls (Simplificado para 1 solo agente por ahora)
     # En la versión completa, esto dependerá de los oponentes
     total_maki = c['maki_1'] * 1 + c['maki_2'] * 2 + c['maki_3'] * 3
-    score += (total_maki // 3) * 2 # Estimación de puntos maki
+
     
-    return score
+    # 5. Nigiri
+    if c['nigiri_salmon']:
+        score += 3 * c['nigiri_salmon']
+    if c['nigiri_squid']:
+        score += 2 * c['nigiri_squid']
+    if c['nigiri_egg']:
+        score += 1 * c['nigiri_egg']
+
+    # 6. Wasabi
+    if c['wasabi']:
+        nigiri_total = (c['nigiri_salmon'] + c['nigiri_squid'] + c['nigiri_egg'])
+        wasabi_used = min(c['wasabi'], nigiri_total)
+        # Cada wasabi usado triplica el valor del nigiri correspondiente
+        # Asumimos que se usan en orden de mayor a menor valor
+        for _ in range(wasabi_used):
+            if c['nigiri_salmon'] > 0:
+                score += 6  # 3 * 2 (salmon)
+                c['nigiri_salmon'] -= 1
+            elif c['nigiri_squid'] > 0:
+                score += 4  # 2 * 2 (squid)
+                c['nigiri_squid'] -= 1
+            elif c['nigiri_egg'] > 0:
+                score += 2  # 1 * 2 (egg)
+                c['nigiri_egg'] -= 1
+    return score, total_maki

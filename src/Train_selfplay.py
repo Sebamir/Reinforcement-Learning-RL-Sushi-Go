@@ -51,8 +51,13 @@ class SelfPlayExperiment:
         )
         
         # Inicializar modelo
-        trainer.init_model()
-        
+        trainer.init_model(
+            policy='MlpPolicy',
+            learning_rate=3e-4,
+            n_steps=2048,
+            batch_size=64,
+            verbose=1
+        )
         
         # Entrenamiento con evaluaciones periódicas
         n_evals = total_timesteps // eval_freq
@@ -67,7 +72,7 @@ class SelfPlayExperiment:
             
             # Evaluar
             eval_results = trainer.evaluate_vs_random(num_games=50)
-            eval_results['timestep'] = current_timestep + eval_freq
+            eval_results['timestep'] = current_timestep + eval_freq 
             
             self.results['evaluation_history'].append(eval_results)
             
