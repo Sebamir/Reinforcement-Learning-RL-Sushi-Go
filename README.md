@@ -10,12 +10,6 @@ Implementación personalizada bajo el estándar de Gymnasium.
 
 Lógica de Dependencia Temporal
 El agente entiende que el Wasabi es una inversión a futuro, buscando maximizar el combo con el Nigiri de Calamar:
-
-3
-×
-3
-=
-9
 3×3=9 pts.
 
 Competencia Multi-Agente
@@ -35,32 +29,9 @@ Para resolver esto:
 Espacio de Observación Extendido
 Se añadieron bits de estado que indican si el jugador tiene un Wasabi Activo.
 
-Modelado de Recompensa
-Se configuró la lógica para que la red neuronal detecte que el valor esperado 
-(
-𝐸
-)
-(E) de esperar un Calamar es mayor que conformarse con un Huevo de forma inmediata.
-
 El Algoritmo PPO
 
 Se utiliza Proximal Policy Optimization (PPO) debido a su estabilidad en entornos donde la política de juego cambia rápidamente (Self-Play).
-
-🛠️ Instalación y Uso
-1. Requisitos
-pip install gymnasium stable-baselines3 shimmy gradio matplotlib numpy
-
-2. Entrenamiento
-
-Para iniciar un experimento de 500,000 pasos con evaluación cada 25,000:
-
-python -m src.train_optimized
-
-3. Jugar contra el Agente
-
-Lanza la interfaz de Gradio para poner a prueba tus habilidades:
-
-python -m src.app_gradio
 
 🏥 Conexión con el Mundo Real: Aplicaciones en Salud
 
@@ -76,11 +47,3 @@ La IA decide si “invertir” en un paciente/plato basándose en lo que el rest
 
 Medicina Personalizada
 El entrenamiento mediante Self-Play vuelve al modelo robusto ante distintos estilos de paciente (estrategias), permitiendo adaptarse a comportamientos no lineales en datos biométricos.
-
-📈 Próximos Pasos
-
- Lógica de Puddings: Implementar la recompensa negativa por tener la menor cantidad de Puddings al final de la partida completa (3 rondas).
-
- Deep Q-Learning: Comparar el rendimiento de PPO contra DQN para este tipo de juegos de cartas.
-
- UI Mejorada: Renderizar imágenes de cartas reales en la interfaz de Gradio.
