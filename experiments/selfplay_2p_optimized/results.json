@@ -1,0 +1,225 @@
+{
+  "training_history": [],
+  "evaluation_history": [
+    {
+      "win_rate": 0.62,
+      "avg_score_diff": 1.5,
+      "games_played": 50,
+      "timestep": 25000,
+      "eval_time": 0.12979578971862793,
+      "total_time": 15.698208808898926
+    },
+    {
+      "win_rate": 0.6,
+      "avg_score_diff": 1.92,
+      "games_played": 50,
+      "timestep": 50000,
+      "eval_time": 0.12306046485900879,
+      "total_time": 29.04031729698181
+    },
+    {
+      "win_rate": 0.52,
+      "avg_score_diff": 0.92,
+      "games_played": 50,
+      "timestep": 75000,
+      "eval_time": 0.12433552742004395,
+      "total_time": 42.36155700683594
+    },
+    {
+      "win_rate": 0.72,
+      "avg_score_diff": 2.06,
+      "games_played": 50,
+      "timestep": 100000,
+      "eval_time": 0.12362861633300781,
+      "total_time": 55.689435720443726
+    },
+    {
+      "win_rate": 0.58,
+      "avg_score_diff": 0.84,
+      "games_played": 50,
+      "timestep": 125000,
+      "eval_time": 0.13014793395996094,
+      "total_time": 69.55352783203125
+    },
+    {
+      "win_rate": 0.66,
+      "avg_score_diff": 1.92,
+      "games_played": 50,
+      "timestep": 150000,
+      "eval_time": 0.12806391716003418,
+      "total_time": 82.94618129730225
+    },
+    {
+      "win_rate": 0.62,
+      "avg_score_diff": 1.66,
+      "games_played": 50,
+      "timestep": 175000,
+      "eval_time": 0.12298727035522461,
+      "total_time": 96.31223964691162
+    },
+    {
+      "win_rate": 0.64,
+      "avg_score_diff": 2.68,
+      "games_played": 50,
+      "timestep": 200000,
+      "eval_time": 0.12373685836791992,
+      "total_time": 109.58019399642944
+    },
+    {
+      "win_rate": 0.7,
+      "avg_score_diff": 2.5,
+      "games_played": 50,
+      "timestep": 225000,
+      "eval_time": 0.12528538703918457,
+      "total_time": 122.92707300186157
+    },
+    {
+      "win_rate": 0.68,
+      "avg_score_diff": 3.4,
+      "games_played": 50,
+      "timestep": 250000,
+      "eval_time": 0.12706804275512695,
+      "total_time": 136.74825930595398
+    },
+    {
+      "win_rate": 0.64,
+      "avg_score_diff": 2.76,
+      "games_played": 50,
+      "timestep": 275000,
+      "eval_time": 0.1276230812072754,
+      "total_time": 150.30189418792725
+    },
+    {
+      "win_rate": 0.56,
+      "avg_score_diff": 0.62,
+      "games_played": 50,
+      "timestep": 300000,
+      "eval_time": 0.12291836738586426,
+      "total_time": 163.58281469345093
+    },
+    {
+      "win_rate": 0.56,
+      "avg_score_diff": 1.06,
+      "games_played": 50,
+      "timestep": 325000,
+      "eval_time": 0.12237739562988281,
+      "total_time": 177.10401248931885
+    },
+    {
+      "win_rate": 0.7,
+      "avg_score_diff": 2.6,
+      "games_played": 50,
+      "timestep": 350000,
+      "eval_time": 0.12349414825439453,
+      "total_time": 190.48177814483643
+    },
+    {
+      "win_rate": 0.56,
+      "avg_score_diff": 0.76,
+      "games_played": 50,
+      "timestep": 375000,
+      "eval_time": 0.13042736053466797,
+      "total_time": 204.57099199295044
+    },
+    {
+      "win_rate": 0.64,
+      "avg_score_diff": 1.48,
+      "games_played": 50,
+      "timestep": 400000,
+      "eval_time": 0.18677353858947754,
+      "total_time": 221.28805994987488
+    },
+    {
+      "win_rate": 0.64,
+      "avg_score_diff": 1.6,
+      "games_played": 50,
+      "timestep": 425000,
+      "eval_time": 0.12325906753540039,
+      "total_time": 237.08714604377747
+    },
+    {
+      "win_rate": 0.6,
+      "avg_score_diff": 1.78,
+      "games_played": 50,
+      "timestep": 450000,
+      "eval_time": 0.12235212326049805,
+      "total_time": 251.71202611923218
+    },
+    {
+      "win_rate": 0.6,
+      "avg_score_diff": 1.42,
+      "games_played": 50,
+      "timestep": 475000,
+      "eval_time": 0.12633514404296875,
+      "total_time": 265.35142612457275
+    },
+    {
+      "win_rate": 0.6,
+      "avg_score_diff": 2.12,
+      "games_played": 50,
+      "timestep": 500000,
+      "eval_time": 0.13614583015441895,
+      "total_time": 279.4191644191742
+    }
+  ],
+  "best_win_rate": 0.72,
+  "metadata": {
+    "num_players": 2,
+    "start_time": "2026-02-07T13:49:40.020182",
+    "training_method": "callback_optimized",
+    "end_time": "2026-02-07T13:54:22.287636",
+    "total_training_time": 281.7465786933899
+  },
+  "final_evaluation": {
+    "win_rate": 0.655,
+    "avg_score_diff": 2.495,
+    "games_played": 200
+  },
+  "demo_games": [
+    {
+      "game": 1,
+      "scores": [
+        7,
+        23
+      ],
+      "winner": 1,
+      "num_actions": 20
+    },
+    {
+      "game": 2,
+      "scores": [
+        6,
+        14
+      ],
+      "winner": 1,
+      "num_actions": 20
+    },
+    {
+      "game": 3,
+      "scores": [
+        13,
+        15
+      ],
+      "winner": 1,
+      "num_actions": 20
+    },
+    {
+      "game": 4,
+      "scores": [
+        14,
+        21
+      ],
+      "winner": 1,
+      "num_actions": 20
+    },
+    {
+      "game": 5,
+      "scores": [
+        14,
+        17
+      ],
+      "winner": 1,
+      "num_actions": 20
+    }
+  ]
+}

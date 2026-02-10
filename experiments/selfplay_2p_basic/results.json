@@ -2,102 +2,174 @@
   "training_history": [],
   "evaluation_history": [
     {
-      "win_rate": 0.7,
-      "avg_score_diff": 2.7,
+      "win_rate": 0.62,
+      "avg_score_diff": 2.34,
       "games_played": 50,
       "timestep": 25000
     },
     {
       "win_rate": 0.68,
-      "avg_score_diff": 1.14,
+      "avg_score_diff": 2.24,
       "games_played": 50,
       "timestep": 50000
     },
     {
-      "win_rate": 0.6,
-      "avg_score_diff": 0.86,
+      "win_rate": 0.66,
+      "avg_score_diff": 2.34,
       "games_played": 50,
       "timestep": 75000
     },
     {
-      "win_rate": 0.64,
-      "avg_score_diff": 1.5,
+      "win_rate": 0.66,
+      "avg_score_diff": 1.28,
       "games_played": 50,
       "timestep": 100000
     },
     {
-      "win_rate": 0.6,
-      "avg_score_diff": 2.26,
+      "win_rate": 0.66,
+      "avg_score_diff": 3.6,
       "games_played": 50,
       "timestep": 125000
     },
     {
-      "win_rate": 0.58,
-      "avg_score_diff": 1.6,
+      "win_rate": 0.68,
+      "avg_score_diff": 2.78,
       "games_played": 50,
       "timestep": 150000
     },
     {
       "win_rate": 0.74,
-      "avg_score_diff": 2.42,
+      "avg_score_diff": 4.3,
       "games_played": 50,
       "timestep": 175000
     },
     {
-      "win_rate": 0.64,
-      "avg_score_diff": 1.52,
+      "win_rate": 0.72,
+      "avg_score_diff": 3.24,
       "games_played": 50,
       "timestep": 200000
+    },
+    {
+      "win_rate": 0.6,
+      "avg_score_diff": 2.0,
+      "games_played": 50,
+      "timestep": 225000
+    },
+    {
+      "win_rate": 0.68,
+      "avg_score_diff": 2.64,
+      "games_played": 50,
+      "timestep": 250000
+    },
+    {
+      "win_rate": 0.7,
+      "avg_score_diff": 2.8,
+      "games_played": 50,
+      "timestep": 275000
+    },
+    {
+      "win_rate": 0.76,
+      "avg_score_diff": 3.84,
+      "games_played": 50,
+      "timestep": 300000
+    },
+    {
+      "win_rate": 0.74,
+      "avg_score_diff": 4.72,
+      "games_played": 50,
+      "timestep": 325000
+    },
+    {
+      "win_rate": 0.7,
+      "avg_score_diff": 4.26,
+      "games_played": 50,
+      "timestep": 350000
+    },
+    {
+      "win_rate": 0.66,
+      "avg_score_diff": 3.32,
+      "games_played": 50,
+      "timestep": 375000
+    },
+    {
+      "win_rate": 0.76,
+      "avg_score_diff": 3.68,
+      "games_played": 50,
+      "timestep": 400000
+    },
+    {
+      "win_rate": 0.76,
+      "avg_score_diff": 5.64,
+      "games_played": 50,
+      "timestep": 425000
+    },
+    {
+      "win_rate": 0.76,
+      "avg_score_diff": 4.04,
+      "games_played": 50,
+      "timestep": 450000
+    },
+    {
+      "win_rate": 0.74,
+      "avg_score_diff": 4.28,
+      "games_played": 50,
+      "timestep": 475000
+    },
+    {
+      "win_rate": 0.58,
+      "avg_score_diff": 2.56,
+      "games_played": 50,
+      "timestep": 500000
     }
   ],
-  "best_win_rate": 0.74,
+  "best_win_rate": 0.76,
   "metadata": {
     "num_players": 2,
-    "start_time": "2026-01-29T12:40:18.712365"
+    "start_time": "2026-02-05T11:18:16.076285"
   },
   "final_evaluation": {
-    "win_rate": 0.655,
-    "avg_score_diff": 2.12,
+    "win_rate": 0.695,
+    "avg_score_diff": 3.245,
     "games_played": 200
   },
   "demo_games": [
     {
       "game": 1,
       "scores": [
-        16,
+        13,
         15
       ],
-      "winner": 0
+      "winner": 1
     },
     {
       "game": 2,
       "scores": [
-        17,
-        22
+        3,
+        18
       ],
       "winner": 1
     },
     {
       "game": 3,
       "scores": [
-        11,
-        23
+        10,
+        15
       ],
       "winner": 1
     },
     {
       "game": 4,
       "scores": [
-        11,
-        19
+        5,
+        14
       ],
       "winner": 1
     },
     {
       "game": 5,
       "scores": [
-        8,
-        14
+        3,
+        11
       ],
       "winner": 1
     }

@@ -2,109 +2,181 @@
   "training_history": [],
   "evaluation_history": [
     {
-      "win_rate": 0.34,
-      "avg_score_diff": 0.54,
+      "win_rate": 0.62,
+      "avg_score_diff": 4.6,
       "games_played": 50,
       "timestep": 25000
     },
     {
       "win_rate": 0.54,
-      "avg_score_diff": 2.98,
+      "avg_score_diff": 3.08,
       "games_played": 50,
       "timestep": 50000
     },
     {
-      "win_rate": 0.38,
-      "avg_score_diff": 0.62,
+      "win_rate": 0.54,
+      "avg_score_diff": 3.84,
       "games_played": 50,
       "timestep": 75000
     },
     {
-      "win_rate": 0.52,
-      "avg_score_diff": 0.9,
+      "win_rate": 0.62,
+      "avg_score_diff": 5.18,
       "games_played": 50,
       "timestep": 100000
     },
     {
-      "win_rate": 0.54,
-      "avg_score_diff": 2.72,
+      "win_rate": 0.5,
+      "avg_score_diff": 3.16,
       "games_played": 50,
       "timestep": 125000
     },
     {
-      "win_rate": 0.58,
-      "avg_score_diff": 2.52,
+      "win_rate": 0.76,
+      "avg_score_diff": 4.68,
       "games_played": 50,
       "timestep": 150000
     },
     {
-      "win_rate": 0.48,
-      "avg_score_diff": 1.44,
+      "win_rate": 0.74,
+      "avg_score_diff": 6.04,
       "games_played": 50,
       "timestep": 175000
     },
     {
-      "win_rate": 0.6,
-      "avg_score_diff": 3.04,
+      "win_rate": 0.48,
+      "avg_score_diff": 3.52,
       "games_played": 50,
       "timestep": 200000
+    },
+    {
+      "win_rate": 0.66,
+      "avg_score_diff": 5.78,
+      "games_played": 50,
+      "timestep": 225000
+    },
+    {
+      "win_rate": 0.74,
+      "avg_score_diff": 6.38,
+      "games_played": 50,
+      "timestep": 250000
+    },
+    {
+      "win_rate": 0.74,
+      "avg_score_diff": 6.38,
+      "games_played": 50,
+      "timestep": 275000
+    },
+    {
+      "win_rate": 0.64,
+      "avg_score_diff": 5.12,
+      "games_played": 50,
+      "timestep": 300000
+    },
+    {
+      "win_rate": 0.7,
+      "avg_score_diff": 5.88,
+      "games_played": 50,
+      "timestep": 325000
+    },
+    {
+      "win_rate": 0.72,
+      "avg_score_diff": 6.58,
+      "games_played": 50,
+      "timestep": 350000
+    },
+    {
+      "win_rate": 0.82,
+      "avg_score_diff": 6.46,
+      "games_played": 50,
+      "timestep": 375000
+    },
+    {
+      "win_rate": 0.76,
+      "avg_score_diff": 8.48,
+      "games_played": 50,
+      "timestep": 400000
+    },
+    {
+      "win_rate": 0.56,
+      "avg_score_diff": 5.72,
+      "games_played": 50,
+      "timestep": 425000
+    },
+    {
+      "win_rate": 0.74,
+      "avg_score_diff": 5.48,
+      "games_played": 50,
+      "timestep": 450000
+    },
+    {
+      "win_rate": 0.76,
+      "avg_score_diff": 7.9,
+      "games_played": 50,
+      "timestep": 475000
+    },
+    {
+      "win_rate": 0.66,
+      "avg_score_diff": 5.54,
+      "games_played": 50,
+      "timestep": 500000
     }
   ],
-  "best_win_rate": 0.6,
+  "best_win_rate": 0.82,
   "metadata": {
     "num_players": 3,
-    "start_time": "2026-01-29T12:42:14.635478"
+    "start_time": "2026-02-05T11:25:23.208434"
   },
   "final_evaluation": {
-    "win_rate": 0.645,
-    "avg_score_diff": 3.37,
+    "win_rate": 0.735,
+    "avg_score_diff": 8.005,
     "games_played": 200
   },
   "demo_games": [
     {
       "game": 1,
       "scores": [
-        11,
-        13,
-        16
+        6,
+        5,
+        20
       ],
       "winner": 2
     },
     {
       "game": 2,
       "scores": [
-        8,
-        4,
-        19
+        6,
+        19,
+        10
       ],
-      "winner": 2
+      "winner": 1
     },
     {
       "game": 3,
       "scores": [
-        14,
-        8,
-        7
+        12,
+        5,
+        6
       ],
       "winner": 0
     },
     {
       "game": 4,
       "scores": [
-        13,
-        14,
-        13
+        6,
+        23,
+        22
       ],
       "winner": 1
     },
     {
       "game": 5,
       "scores": [
-        16,
-        17,
-        10
+        10,
+        11,
+        22
       ],
-      "winner": 1
+      "winner": 2
     }
   ]
 }

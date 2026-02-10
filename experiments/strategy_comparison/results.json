@@ -4,17 +4,17 @@
   "best_win_rate": 0,
   "metadata": {
     "num_players": 2,
-    "start_time": "2026-01-29T12:44:07.136833"
+    "start_time": "2026-02-05T11:32:44.395292"
   },
   "strategy_comparison": {
     "sequential": {
-      "win_rate": 0.78,
-      "avg_score_diff": 3.22,
+      "win_rate": 0.72,
+      "avg_score_diff": 3.39,
       "games_played": 100
     },
     "historical": {
-      "win_rate": 0.65,
-      "avg_score_diff": 1.72,
+      "win_rate": 0.68,
+      "avg_score_diff": 3.56,
       "games_played": 100
     }
   }
